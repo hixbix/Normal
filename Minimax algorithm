@@ -1,0 +1,126 @@
+    // the bot is only O
+    public static int ImpBot(char[][]gameBoard){
+        int counter = 0;
+        for(int i=0;i<3;i++){
+            for(int j=0;j<3;j++){
+                if(gameBoard[i][j] != ' ') counter++;
+            }
+        }
+        if(counter == 1 && gameBoard[1][1] == 'X'){
+            int[] arr = {1,3,7,9};
+            int random = (int)(Math.random()*4);
+            return arr[random];
+        }else if(counter == 1 && gameBoard[1][1] != 'X'){
+            return 5;
+        }
+        char[][] newGameBoard = new char[3][3];
+        for(int i=0;i<3;i++){
+            for(int j=0;j<3;j++){
+                newGameBoard[i][j] = gameBoard[i][j];
+            }
+        }
+        int count = 0;
+        for(int i=0; i<3;i++){
+            for(int j=0; j<3;j++){
+                count += 1;
+                if(istaken(newGameBoard,count));
+                else{
+                    newGameBoard[i][j] = 'O';
+                    if(check(newGameBoard,'O').equals("")){
+                        newGameBoard[i][j] = ' ';
+                    }
+                    else{
+                        newGameBoard[i][j] = ' ';
+                        return count;
+                    }
+                }
+            }
+        }
+        count = 0;
+        for(int i=0; i<3;i++){
+            for(int j=0; j<3;j++){
+                count += 1;
+                if(istaken(newGameBoard,count));
+                else{
+                    newGameBoard[i][j] = 'X';
+                    if(check(newGameBoard,'X').equals("")){
+                        newGameBoard[i][j] = ' ';
+                    }
+                    else{
+                        newGameBoard[i][j] = ' ';
+                        return count;
+                    }
+                }
+            }
+        }
+        int score;
+        int lovelyOne = 2;
+        int max = Integer.MIN_VALUE;
+        int currentPlace = 0;
+        for(int i=0;i<3;i++){
+            for(int j=0;j<3;j++){
+                currentPlace++;
+                if(newGameBoard[i][j] == ' '){
+                    newGameBoard[i][j] = 'O';
+                    score = theBot(newGameBoard, 'X');
+                    newGameBoard[i][j] = ' ';
+                    if(score > max){
+                        max = score;
+                        lovelyOne = currentPlace;
+                    }
+                }
+            }
+        }
+        return lovelyOne;
+    }
+
+    public static int theBot(char[][]gameBoard, char symbol){
+        if(check(gameBoard,'O').equals("win")||check(gameBoard,'O').equals("tie")||check(gameBoard,'X').equals("win")){
+            return theScore(gameBoard);
+        }
+
+        if(symbol == 'O'){
+            int wantedScore = Integer.MIN_VALUE;
+            for(int i = 0; i< 3; i++){
+                for(int j = 0; j< 3; j++){
+                    if(gameBoard[i][j] == ' '){
+                        gameBoard[i][j] = 'O';
+                        int score = theBot(gameBoard, 'X');
+                        gameBoard[i][j] = ' ';
+                        if(score > wantedScore){
+                            wantedScore = score;
+                        }
+                    }
+                }
+            }
+            return wantedScore;
+        }else{
+            int wantedScore = Integer.MAX_VALUE;
+            for(int i = 0; i< 3; i++){
+                for(int j = 0; j< 3; j++){
+                    if(gameBoard[i][j] == ' '){
+                        gameBoard[i][j] = 'X';
+                        int score = theBot(gameBoard, 'O');
+                        gameBoard[i][j] = ' ';
+                        if(score < wantedScore){
+                            wantedScore = score;
+                        }
+                    }
+                }
+            }
+            return wantedScore;
+        }
+    }
+
+    public static int theScore(char[][]g){
+        int emptySpaces = 1;
+        for(int i = 0; i< 3; i++){
+            for(int j = 0; j< 3; j++){
+                if(g[i][j] == ' ') emptySpaces++;
+            }
+        }
+        if(check(g,'O').equals("win")) return emptySpaces;
+        else if(check(g,'O').equals("tie")) return 0;
+        else if(check(g,'X').equals("win")) return -1 * emptySpaces;
+        else return 0;
+    }
